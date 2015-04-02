@@ -48,7 +48,6 @@ Settings for a new stack:
         "cluster": { 
             "name": "<CLUSTER NAME>" 
         },
-
         
         "cloud": {
             "aws": {
@@ -99,6 +98,7 @@ Settings for a new stack:
             "username": "<AUTH USERNAME>",
             "password": "<AUTH PASSWORD>"
         },
+
         "nginx_kibana": {
             "server_port": 80,
             "server_name": "<EXTERNAL WEB HOSTNAME>"
