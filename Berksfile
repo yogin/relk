@@ -6,6 +6,7 @@ cookbook 'java'
 cookbook 'elasticsearch'
 cookbook 'kibana_lwrp', git: 'https://github.com/lusis/chef-kibana.git'
 cookbook 'htpasswd'
+cookbook 'ohai'
 
 # OpsWork is still running with Chef 11
 # Chef 12 introduced breaking changes by adding a "compile_time" directive

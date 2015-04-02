@@ -8,6 +8,7 @@ license "MIT"
 depends 'htpasswd'
 depends 'nginx'
 depends 'kibana_lwrp'
+depends 'ohai'
 
 supports 'ubuntu'
 supports 'debian'
