@@ -2,6 +2,8 @@ DEPENDENCIES
   elasticsearch
   java
   kibana_lwrp
+    git: https://github.com/lusis/chef-kibana.git
+    revision: 77a828bd3d04a8e79064e913397dc7685132d9a3
 
 GRAPH
   7-zip (1.0.2)
