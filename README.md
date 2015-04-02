@@ -99,7 +99,7 @@ Settings for a new stack:
             "username": "<AUTH USERNAME>",
             "password": "<AUTH PASSWORD>"
         },
-        "kibana_nginx": {
+        "nginx_kibana": {
             "server_port": 80,
             "server_name": "<EXTERNAL WEB HOSTNAME>"
         }
