@@ -1,0 +1,16 @@
+upstream kibana {
+  server 127.0.0.1:<%= @kibana_port %>;
+}
+
+server {
+  listen <%= @server_port %>;
+  server_name <%= @server_name %>;
+
+  location / {
+    proxy_pass http://kibana;
+    proxy_read_timeout 90;
+
+    auth_basic "Restricted Access";
+    auth_basic_user_file <%= @htpasswd_file %>;
+  }
+}

@@ -92,6 +92,17 @@ Settings for a new stack:
         "install_java": false,
         "webserver_hostname": "<EXTERNAL WEB HOSTNAME>",
         "es_server": "<INTERNAL ELASTICSEARCH LB HOSTNAME>"
+    },
+
+    "relk": {
+        "htpasswd": {
+            "username": "<AUTH USERNAME>",
+            "password": "<AUTH PASSWORD>"
+        },
+        "kibana_nginx": {
+            "server_port": 80,
+            "server_name": "<EXTERNAL WEB HOSTNAME>"
+        }
     }
 }
 ```
@@ -107,6 +118,8 @@ Settings for a new stack:
 * __OPSWORKS ELASTICSEARCH LAYER NAME__: name for your ES layer (see below)
 * __EXTERNAL WEB HOSTNAME__: the (public) hostname you will use to access Kibana
 * __INTERNAL ELASTICSEARCH LB HOSTNAME__: the hostname for Elasticsearch or a LoadBalancer to ES instances
+* __AUTH USERNAME__: username for NGiNX auth
+* __AUTH PASSWORD__: password for NGiNX auth
 
 
 ### Stack Layers
@@ -126,6 +139,7 @@ All layers should be setup as custom applications.
 * __Shortname__: `kibana`
 * Recipes:
   * __Setup__: `java`, `kibana_lwrp::install`
+  * __Configure__: `relk::nginx_kibana`
 
 #### Logstash Cluster
 
