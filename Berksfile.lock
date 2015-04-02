@@ -1,6 +1,7 @@
 DEPENDENCIES
   chef-sugar (~> 3.0.1)
   elasticsearch
+  htpasswd
   java
   kibana_lwrp
     git: https://github.com/lusis/chef-kibana.git
@@ -36,6 +37,8 @@ GRAPH
     windows (>= 0.0.0)
     yum (~> 3.0)
     yum-epel (>= 0.0.0)
+  htpasswd (0.2.4)
+    python (>= 0.0.0)
   iptables (1.0.0)
   java (1.31.0)
   kibana_lwrp (2.0.4)
@@ -61,6 +64,9 @@ GRAPH
     yum-epel (~> 0.3)
   ohai (2.0.1)
   poise (1.0.12)
+  python (1.4.6)
+    build-essential (>= 0.0.0)
+    yum-epel (>= 0.0.0)
   rsyslog (1.15.0)
   runit (1.5.18)
     build-essential (>= 0.0.0)
