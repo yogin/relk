@@ -4,4 +4,5 @@ source 'https://api.berkshelf.com'
 
 cookbook 'java'
 cookbook 'elasticsearch'
+cookbook 'kibana_lwrp'
 
