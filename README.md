@@ -1,6 +1,6 @@
 # RELK
 
-A clean attempt to get an ELK stack running with RabbitMQ in AWS OpsWorks.
+A clean attempt to get an ELK stack running with RabbitMQ (but we'll start with SQS for now) in AWS OpsWorks.
 
 ## VPC
 
@@ -9,6 +9,40 @@ A clean attempt to get an ELK stack running with RabbitMQ in AWS OpsWorks.
 ### VPC Security Groups
 
 ### VPC Load Balancers
+
+## SQS
+
+For now we'll be using SQS instead of RabbitMQ. In the long run I will probably provide different recipes for each.
+
+Create a new SQS queue named `elasticsearch` and take a note of the ARN created, it looks something like `arn:aws:sqs:us-west-1:XXX:elasticsearch`.
+
+In IAM, you can either create a read and write policy or a single one, I made a single one for both, but if you want to separate, simply move the `sqs:SendMessage` into a `writer` policy, and and keep what's left for a `reader` policy. Below is the 2 combined into a policy I named `sqs-elasticsearch-readwrite` :
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1428025755000",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:ChangeMessageVisibility",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ListQueues",
+                "sqs:ReceiveMessage",
+                "sqs:SendMessage"
+            ],
+            "Resource": [
+                "arn:aws:sqs:us-west-1:XXX:elasticsearch"
+            ]
+        }
+    ]
+}
+```
+
+Then attach this policy to the IAM account you're using for your AWS keys.
 
 ## OpsWorks Stack
 
@@ -26,84 +60,108 @@ Settings for a new stack:
 ### Stack Custom JSON
 ```json
 {
-    "java": {
-        "install_flavor": "openjdk",
-        "jdk_version": "7"
-    },
+	"java": {
+		"install_flavor": "openjdk",
+		"jdk_version": "7"
+	},
 
-    "elasticsearch": {
-        "version": "<ES VERSION>",
-        "plugins": {
-            "elasticsearch/elasticsearch-cloud-aws": {
-                "version": "<CLOUD AWS VERSION>"
-            }
-        },
+	"elasticsearch": {
+		"version": "<ES VERSION>",
+		"plugins": {
+			"elasticsearch/elasticsearch-cloud-aws": {
+				"version": "<CLOUD AWS VERSION>"
+			}
+		},
 
-        "path": {
-            "data": [
-                "/usr/local/var/data/elasticsearch/disk1"
-            ]
-        },
+		"path": {
+	       "data": [
+	           "/usr/local/var/data/elasticsearch/disk1"
+	       ]
+	   },
 
-        "cluster": { 
-            "name": "<CLUSTER NAME>" 
-        },
+		"cluster": { 
+			"name": "<CLUSTER NAME>" 
+	   },
         
-        "cloud": {
-            "aws": {
-                "access_key": "<AWS ACCESS KEY>",
-                "secret_key": "<AWS SECRET KEY>",
-                "region": "<AWS REGION>"
-            }
-        },
+		"cloud": {
+			"aws": {
+				"access_key": "<AWS ACCESS KEY>",
+				"secret_key": "<AWS SECRET KEY>",
+				"region": "<AWS REGION>"
+			}
+		},
 
-        "discovery": {
-            "type": "ec2",
-            "ec2": {
-                "tag": {
-                    "opsworks:stack": "<OPSWORKS STACK NAME>",
-                    "opsworks:layer:<OPSWORKS ELASTICSEARCH LAYER SHORTNAME>": "<OPSWORKS ELASTICSEARCH LAYER NAME>"
-                }
-            }
-        },
+		"discovery": {
+			"type": "ec2",
+			"ec2": {
+				"tag": {
+					"opsworks:stack": "<OPSWORKS STACK NAME>",
+					"opsworks:layer:<OPSWORKS ELASTICSEARCH LAYER SHORTNAME>": "<OPSWORKS ELASTICSEARCH LAYER NAME>"
+				}
+			}
+		},
 
-        "data": {
-            "devices": {
-                "/dev/xvdc1": {
-                    "file_system"      : "ext3",
-                    "mount_options"    : "rw,user",
-                    "mount_path"       : "/usr/local/var/data/elasticsearch/disk1",
-                    "format_command"   : "mkfs.ext3",
-                    "fs_check_command" : "dumpe2fs",
-                    "ebs": {
-                        "size"                  : 50,
-                        "delete_on_termination" : false,
-                        "type"                  : "gp2",
-                        "iops"                  : 150
-                    }
-                }
-            }
-        }
+		"data": {
+			"devices": {
+				"/dev/xvdc1": {
+					"file_system"      : "ext3",
+					"mount_options"    : "rw,user",
+					"mount_path"       : "/usr/local/var/data/elasticsearch/disk1",
+					"format_command"   : "mkfs.ext3",
+					"fs_check_command" : "dumpe2fs",
+					"ebs": {
+						"size"                  : 50,
+						"delete_on_termination" : false,
+						"type"                  : "gp2",
+						"iops"                  : 150
+					}
+				}
+			}
+		}
+	},
 
-    },
+	"kibana": {
+		"install_java": false,
+		"webserver_hostname": "<EXTERNAL WEB HOSTNAME>",
+		"es_server": "<INTERNAL ELASTICSEARCH LB HOSTNAME>"
+	},
 
-    "kibana": {
-        "install_java": false,
-        "webserver_hostname": "<EXTERNAL WEB HOSTNAME>",
-        "es_server": "<INTERNAL ELASTICSEARCH LB HOSTNAME>"
-    },
+	"logstash": {
+		"instance": {
+			"elasticsearch_cluster": "<CLUSTER NAME>",
+			"version": "1.4.2",
+			"source_url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz",
+			"inputs": [{
+				"sqs": {
+					"access_key_id": "<AWS ACCESS KEY>",
+					"secret_access_key": "<AWS SECRET KEY>",
+					"queue": "<SQS QUEUE ARN>",
+					"region": "<AWS REGION>",
+					"threads": 25,
+					"use_ssl": "false",
+					"codec": "json"
+				}
+			}],
+			"outputs": [{
+				"elasticsearch": {
+					"host": "<INTERNAL ELASTICSEARCH LB HOSTNAME>",
+					"cluster": "<CLUSTER NAME>"
+				}
+			}]
+		}
+	},
+    
+	"relk": {
+		"htpasswd": {
+			"username": "<AUTH USERNAME>",
+			"password": "<AUTH PASSWORD>"
+		},
 
-    "relk": {
-        "htpasswd": {
-            "username": "<AUTH USERNAME>",
-            "password": "<AUTH PASSWORD>"
-        },
-
-        "nginx_kibana": {
-            "server_port": 80,
-            "server_name": "<EXTERNAL WEB HOSTNAME>"
-        }
-    }
+		"nginx_kibana": {
+			"server_port": 80,
+			"server_name": "<EXTERNAL WEB HOSTNAME>"
+		}
+	}
 }
 ```
 
@@ -120,6 +178,7 @@ Settings for a new stack:
 * __INTERNAL ELASTICSEARCH LB HOSTNAME__: the hostname for Elasticsearch or a LoadBalancer to ES instances
 * __AUTH USERNAME__: username for NGiNX auth
 * __AUTH PASSWORD__: password for NGiNX auth
+* __SQS QUEUE ARN__: ARN for the SQS queue you created
 
 
 ### Stack Layers
