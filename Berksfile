@@ -6,7 +6,7 @@ cookbook 'java', '~> 1.31.0'
 cookbook 'elasticsearch', '~> 0.3.13'
 cookbook 'htpasswd', '~> 0.2.4'
 cookbook 'ohai', '~> 2.0.1'
-cookbook 'logstash', '~> 0.11.4'
+cookbook 'simple-logstash', '~> 0.2.1'
 
 cookbook 'kibana_lwrp', '~> 2.0.4', git: 'https://github.com/lusis/chef-kibana.git'
 
