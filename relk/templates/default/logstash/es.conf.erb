@@ -1,0 +1,8 @@
+output {
+  elasticsearch {
+    cluster => "<%= @elasticsearch_cluster %>"
+    host => "<%= @elasticsearch_host %>"
+    codec => "json"
+    protocol => "http"
+  }
+}
