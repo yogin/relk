@@ -203,6 +203,6 @@ All layers should be setup as custom applications.
 * __Name__: `Logstash Cluster`
 * __Shortname__: `logstash`
 * Recipes:
-  * __Setup__: `java`, `relk::logstash_conf`
+  * __Setup__: `java`, `relk::logstash_config`
 
 #### RabbitMQ Cluster
