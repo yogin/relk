@@ -9,6 +9,7 @@ depends 'htpasswd'
 depends 'nginx'
 depends 'kibana_lwrp'
 depends 'ohai'
+depends 'simple-logstash'
 
 supports 'ubuntu'
 supports 'debian'
