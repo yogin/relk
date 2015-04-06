@@ -127,28 +127,8 @@ Settings for a new stack:
 	},
 
 	"logstash": {
-		"instance": {
-			"elasticsearch_cluster": "<CLUSTER NAME>",
-			"version": "1.4.2",
-			"source_url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz",
-			"inputs": [{
-				"sqs": {
-					"access_key_id": "<AWS ACCESS KEY>",
-					"secret_access_key": "<AWS SECRET KEY>",
-					"queue": "<SQS QUEUE ARN>",
-					"region": "<AWS REGION>",
-					"threads": 25,
-					"use_ssl": "false",
-					"codec": "json"
-				}
-			}],
-			"outputs": [{
-				"elasticsearch": {
-					"host": "<INTERNAL ELASTICSEARCH LB HOSTNAME>",
-					"cluster": "<CLUSTER NAME>"
-				}
-			}]
-		}
+	  "version": "1.4.2",
+	  "download_url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz"
 	},
     
 	"relk": {
@@ -160,7 +140,25 @@ Settings for a new stack:
 		"nginx_kibana": {
 			"server_port": 80,
 			"server_name": "<EXTERNAL WEB HOSTNAME>"
-		}
+		},
+		
+        "logstash": {
+            "input": {
+                "sqs": {
+                    "access_key": "<AWS ACCESS KEY>",
+                    "secret_key": "<AWS SECRET KEY>",
+                    "region": "<AWS REGION>",
+                    "queue": "<AWS SQS QUEUE NAME>"                    
+                }
+            },
+            
+            "output": {
+                "elasticsearch": {
+                    "host": "<INTERNAL ELASTICSEARCH LB HOSTNAME>",
+                    "cluster": "<CLUSTER NAME>"
+                }
+            }
+        }		
 	}
 }
 ```
@@ -178,7 +176,7 @@ Settings for a new stack:
 * __INTERNAL ELASTICSEARCH LB HOSTNAME__: the hostname for Elasticsearch or a LoadBalancer to ES instances
 * __AUTH USERNAME__: username for NGiNX auth
 * __AUTH PASSWORD__: password for NGiNX auth
-* __SQS QUEUE ARN__: ARN for the SQS queue you created
+* __AWS SQS QUEUE NAME__: name of the SQS queue (NOT the ARN)
 
 
 ### Stack Layers
@@ -201,5 +199,10 @@ All layers should be setup as custom applications.
   * __Configure__: `relk::nginx_kibana`
 
 #### Logstash Cluster
+
+* __Name__: `Logstash Cluster`
+* __Shortname__: `logstash`
+* Recipes:
+  * __Setup__: `java`, `relk::logstash_conf`
 
 #### RabbitMQ Cluster
