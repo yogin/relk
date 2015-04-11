@@ -15,3 +15,6 @@ default['relk']['logstash']['input']['sqs']['queue'] = ''
 # logstash output
 default['relk']['logstash']['output']['elasticsearch']['host'] = ''
 default['relk']['logstash']['output']['elasticsearch']['cluster'] = ''
+default['relk']['logstash']['output']['elasticsearch']['index'] = 'logstash-%{+YYYY.MM.dd}'
+default['relk']['logstash']['output']['elasticsearch']['index_type'] = 'logs'
+default['relk']['logstash']['output']['elasticsearch']['use_dynamic_index_type'] = false

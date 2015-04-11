@@ -1,10 +1,13 @@
 input {
+<% Array(@sqs_queue).each do |queue_name| %>
   sqs {
     access_key_id => "<%= @aws_access_key %>"
     secret_access_key => "<%= @aws_secret_key %>"
     region => "<%= @aws_region %>"
-    queue => "<%= @sqs_queue %>"
-    use_ssl => "false"
+    queue => "<%= @queue_name %>"
+    type => "<%= @queue_name %>"
+    use_ssl => false
     codec => "json"
   }
+<% end %>
 }

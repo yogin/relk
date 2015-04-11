@@ -4,5 +4,7 @@ output {
     host => "<%= @elasticsearch_host %>"
     codec => "json"
     protocol => "http"
+    index => "<%= @elasticsearch_index %>"
+    index_type => "<%= @elasticsearch_use_dynamic_index_type ? "%{type}" : @elasticsearch_index_type %>"
   }
 }

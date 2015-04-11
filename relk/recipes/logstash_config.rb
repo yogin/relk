@@ -15,6 +15,9 @@ logstash_output 'es' do
   variables({
     elasticsearch_host: node['relk']['logstash']['output']['elasticsearch']['host'],
     elasticsearch_cluster: node['relk']['logstash']['output']['elasticsearch']['cluster']
+    elasticsearch_index: node['relk']['logstash']['output']['elasticsearch']['index'],
+    elasticsearch_index_type: node['relk']['logstash']['output']['elasticsearch']['index_type']
+    elasticsearch_use_dynamic_index_type: node['relk']['logstash']['output']['elasticsearch']['use_dynamic_index_type']
   })
 end
 
